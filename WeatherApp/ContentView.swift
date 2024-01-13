@@ -9,6 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isNight : Bool = false
+    
+    let weatherData : [WeatherDayModel] = [
+        WeatherDayModel(day: "TUE",
+                        weatherImage: "cloud.sun.fill",
+                        temperature: 76),
+        WeatherDayModel(day: "WED",
+                        weatherImage: "sun.max.fill",
+                        temperature: 88),
+        WeatherDayModel(day: "THURS",
+                        weatherImage: "wind.snow",
+                        temperature: 75),
+        WeatherDayModel(day: "FRI",
+                        weatherImage: "tornado",
+                        temperature: 70),
+        WeatherDayModel(day: "SAT",
+                        weatherImage: "snow",
+                        temperature: 60)]
+    @StateObject private var weatherViewModel = ViewModel()
     var body: some View {
         ZStack{
                 BackgroundView(isNight: $isNight)
@@ -21,11 +39,10 @@ struct ContentView: View {
            
                 
                 HStack(spacing: 20){
-                    WeatherDayView(day: "TUE", weatherImage: "cloud.sun.fill", temperature: 76)
-                    WeatherDayView(day: "WED", weatherImage:  "sun.max.fill", temperature: 88)
-                    WeatherDayView(day: "THURS", weatherImage: "wind.snow", temperature: 75)
-                    WeatherDayView(day: "FRI", weatherImage: "tornado", temperature: 70)
-                    WeatherDayView(day: "SAT", weatherImage: "snow", temperature: 60)
+                    ForEach(weatherData , id: \.day){weather in
+                        WeatherDayView(day: weather.day, weatherImage: weather.weatherImage, temperature: weather.temperature)
+                        
+                    }
                    
                 }
                 .padding()
@@ -33,7 +50,11 @@ struct ContentView: View {
                 Spacer()
                 
                 Button(action: {
-                    isNight.toggle()
+                    withAnimation{
+                        isNight.toggle()
+                        weatherViewModel.getWeatherInformation()
+                        
+                    }
                 }, label: {
                     ButtonStyle(text: "Change Day Time", backgroundColor: Color.white, foregroundColor: Color.blue)
                     
@@ -81,7 +102,7 @@ struct BackgroundView: View {
                        startPoint:.topLeading,
                        endPoint: .bottomTrailing)
         .ignoresSafeArea()
-        .animation(.easeIn, value: isNight)
+//        .animation(.easeIn, value: isNight)
     }
 }
 
@@ -102,7 +123,7 @@ struct MainWeatherView: View {
             
         }
         .padding(.bottom , 40)
-        .animation(.easeIn, value: imageName)
+//        .animation(.easeIn, value: imageName)
     }
 }
 
